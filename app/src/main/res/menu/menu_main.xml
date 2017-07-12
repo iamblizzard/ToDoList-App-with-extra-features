@@ -1,0 +1,34 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+    <!--
+        <item android:id="@+id/action_settings" android:title="@string/action_settings"
+            android:orderInCategory="100" app:showAsAction="never" />
+    -->
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/create_backup"
+            android:orderInCategory="1"
+            app:showAsAction="never"
+            android:title="@string/create_backup"/>
+        <item
+            android:id="@+id/stop_notify"
+            android:orderInCategory="2"
+            app:showAsAction="never"
+            android:title="@string/stop_notify"/>
+
+        <item
+            android:id="@+id/enable_notify"
+            android:orderInCategory="3"
+            app:showAsAction="never"
+            android:title="@string/enable_notify"/>
+
+        <item
+            android:id="@+id/clear_data"
+            android:orderInCategory="4"
+            app:showAsAction="never"
+            android:title="@string/clear_data"/>
+
+    </group>
+</menu>

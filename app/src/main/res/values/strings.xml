@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ToDoList</string>
+    <string name="clear_data">Delete All Tasks</string>
+    <string name="create_backup">Create Backup</string>
+    <string name="stop_notify"> Stop Notification</string>
+    <string name="enable_notify"> Enable Notification</string>
+</resources>

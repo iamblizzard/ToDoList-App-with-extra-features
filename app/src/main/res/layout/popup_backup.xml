@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/popup_backup"
+    android:background="@color/backup_window">
+
+    <EditText
+        android:id="@+id/backup_text"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        />
+
+    <Button
+        android:id="@+id/backup_btn"
+        android:text="Save"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/backup_text"
+        android:layout_margin="@dimen/fab_margin"
+        android:gravity="center"/>
+
+    <Button
+        android:id="@+id/cancel_backup"
+        android:text="Cancel"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/backup_text"
+        android:layout_toEndOf="@+id/backup_btn"
+        android:layout_margin="@dimen/fab_margin"
+        android:gravity="center"
+        android:layout_toRightOf="@+id/backup_btn" />
+
+</RelativeLayout>
