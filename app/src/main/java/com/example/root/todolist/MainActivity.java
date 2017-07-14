@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.DialogFragment;
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String ret = "";
+        /*String ret = "";
 
         try {
             InputStream inputStream = this.openFileInput("backup.txt");
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("login activity", "File not found: " + e.toString());
         } catch (IOException e) {
             Log.e("login activity", "Can not read file: " + e.toString());
-        }
+        } */
 
         am = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent intent = new Intent(this, NotificationAlarm.class);
@@ -98,9 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (alarmUp)
             am.cancel(sender);
-
-        RelativeLayout main = (RelativeLayout) findViewById(R.id.activity_main);
-        //main.setBackgroundColor(Color.parseColor("#92F48D"));
 
         dbHandler = new MyDBHandler(this);
 

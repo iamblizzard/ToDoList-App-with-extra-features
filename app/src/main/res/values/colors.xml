@@ -5,7 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="title">#000000</color>
     <color name="year"> #000000</color>
-    <color name="high_priority"> #F46060 </color>
+    <color name="high_priority"> #F66E36 </color>
     <color name="medium_priority"> #E7F50C </color>
     <color name="low_priority"> #1EF50C </color>
     <color name="backup_window"> #B2E5FC </color>

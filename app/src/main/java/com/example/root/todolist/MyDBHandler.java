@@ -58,14 +58,6 @@ public class MyDBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-    //returns color by taskname from database
-    public String show_color(String taskname){
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor c = db.rawQuery("SELECT color from tasks where taskname= \""+taskname+"\";",null);
-        c.moveToFirst();
-        return c.getString(c.getColumnIndex("color"));
-    }
-
     //Delete a product from the database
     public void deleteTask(String taskName){
         SQLiteDatabase db = this.getWritableDatabase();
