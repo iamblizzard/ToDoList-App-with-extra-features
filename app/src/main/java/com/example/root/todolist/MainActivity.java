@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private static MyDBHandler dbHandler;
     private PopupWindow pw;
     public static EditText userinput;
+    public View popup_layout;
 
     AlarmManager am;
     PendingIntent sender;
@@ -141,9 +142,59 @@ public class MainActivity extends AppCompatActivity {
             final LayoutInflater inflater = (LayoutInflater) MainActivity.this
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            final View layout = inflater.inflate(R.layout.popup,
+            popup_layout = inflater.inflate(R.layout.popup,
                     (ViewGroup) findViewById(R.id.popup_element));
-            pw = new PopupWindow(layout, RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT, true);
+
+            final AlertDialog alertDialog = new AlertDialog.Builder(this)
+            .setView(popup_layout)
+            .setTitle("Enter Task")
+            .setPositiveButton("Save", null)
+            .setNeutralButton("Set Date", null)
+            .create();
+
+            alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+                @Override
+                public void onShow(DialogInterface dialog) {
+
+                    Button save = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                    save.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+
+                            userinput = (EditText) popup_layout.findViewById(R.id.userinput);
+                            String input = userinput.getText().toString().trim();
+
+                            if (input != null && !input.isEmpty()) {
+
+                                Tasks task = new Tasks(input, s, "low_priority", 1);
+                                dbHandler.addTask(task);
+                                taskList.add(task);
+                                mAdapter.notifyDataSetChanged();
+                            }
+
+                            s = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
+                            alertDialog.dismiss();
+                        }
+                    });
+
+                    Button date = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEUTRAL);
+                    date.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+
+                            DialogFragment newFragment = new DatePickerFragment();
+                            newFragment.show(getSupportFragmentManager(), "datePicker");
+                        }
+                    });
+                }
+            });
+
+            alertDialog.show();
+
+            /*pw = new PopupWindow(layout, RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT, true);
             pw.showAtLocation(v, Gravity.CENTER, 0, 0);
 
             Button date_btn = (Button) layout.findViewById(R.id.date_btn);
@@ -185,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     pw.dismiss();
                 }
-            });
+            });*/
 
 
         } catch (Exception e) {
@@ -218,6 +269,11 @@ public class MainActivity extends AppCompatActivity {
                 d = "0" + d;
             s = d + "/" + mon + "/" + ((Integer) year).toString();
         }
+    }
+
+    public void saveTask() {
+
+
     }
 
     public void showDatabase() {
