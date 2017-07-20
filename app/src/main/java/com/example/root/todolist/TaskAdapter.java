@@ -158,7 +158,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder>{
 
             final AlertDialog alertDialog = new AlertDialog.Builder(activity)
                     .setView(popup_layout)
-                    .setTitle("Enter Task")
+                    .setTitle("Edit Task")
                     .setPositiveButton("Save", null)
                     .setNeutralButton("Set Date", null)
                     .create();
