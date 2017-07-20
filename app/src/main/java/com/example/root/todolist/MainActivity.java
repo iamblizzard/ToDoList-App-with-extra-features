@@ -16,6 +16,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private PopupWindow pw;
     public static EditText userinput;
     public View popup_layout;
+    public View view;
+    public static DateClass date = new DateClass();
 
     AlarmManager am;
     PendingIntent sender;
@@ -105,14 +109,13 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
-        mAdapter = new TaskAdapter(taskList, this);
+        mAdapter = new TaskAdapter(taskList, this, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
 
         showDatabase();
-
 
     }
 
@@ -134,9 +137,6 @@ public class MainActivity extends AppCompatActivity {
         initiatePopupWindow(view);
     }
 
-    public static String s = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
-    ;
-
     private void initiatePopupWindow(View v) {
         try {
             final LayoutInflater inflater = (LayoutInflater) MainActivity.this
@@ -157,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onShow(DialogInterface dialog) {
 
+                    date.s = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
+
                     Button save = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
                     save.setOnClickListener(new View.OnClickListener() {
 
@@ -168,13 +170,12 @@ public class MainActivity extends AppCompatActivity {
 
                             if (input != null && !input.isEmpty()) {
 
-                                Tasks task = new Tasks(input, s, "low_priority", 1);
+                                Tasks task = new Tasks(input, date.s, "low_priority", 1);
                                 dbHandler.addTask(task);
                                 taskList.add(task);
                                 mAdapter.notifyDataSetChanged();
                             }
 
-                            s = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
                             alertDialog.dismiss();
                         }
                     });
@@ -267,13 +268,8 @@ public class MainActivity extends AppCompatActivity {
                 mon = "0" + mon;
             if (day < 10)
                 d = "0" + d;
-            s = d + "/" + mon + "/" + ((Integer) year).toString();
+            date.s = d + "/" + mon + "/" + ((Integer) year).toString();
         }
-    }
-
-    public void saveTask() {
-
-
     }
 
     public void showDatabase() {

@@ -1,42 +1,58 @@
 package com.example.root.todolist;
 
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder>{
 
     private List<Tasks> tasksList;
     private Context context;
+    private android.view.ActionMode mActionMode;
+    private Activity activity;
+    private FragmentActivity fragmentActivity;
 
-    View v;
+    View v,popup_layout;
+    EditText userinput;
 
     static int position;
     static String task_name;
+    static String s;
     static int pos;
+    public static DateClass date = new DateClass();
 
-    public TaskAdapter(List<Tasks> taskList, Context context) {
+    public TaskAdapter(List<Tasks> taskList, Context context, Activity activity) {
 
         this.tasksList = taskList;
         this.context = context;
+        this.activity= activity;
+        this.fragmentActivity = (FragmentActivity)activity;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
@@ -54,8 +70,54 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder>{
             view.setClickable(true);
             view.setFocusableInTouchMode(true);
 
+            final android.view.ActionMode.Callback mActionModeCallback = new android.view.ActionMode.Callback() {
 
-            relativelayout.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
+                    // Inflate a menu resource providing context menu items
+                    MenuInflater inflater = mode.getMenuInflater();
+                    inflater.inflate(R.menu.context_menu, menu);
+                    return true;
+                }
+
+                @Override
+                public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
+                    return false;  //return false if nothing is done
+                }
+
+                @Override
+                public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.delete:
+
+                            position = getAdapterPosition();
+                            task_name = tasksList.get(position).get_taskname();
+                            AlertDialog dialog = AskOption();
+                            dialog.show();
+                            mode.finish(); // Action picked, so close the CAB
+                            return true;
+
+                        case R.id.edit:
+
+                            position = getAdapterPosition();
+                            initiatePopupWindow();
+                            mode.finish(); // Action picked, so close the CAB
+                            return true;
+
+                        default:
+                            return false;
+                    }
+                }
+
+                @Override
+                public void onDestroyActionMode(android.view.ActionMode mode) {
+                    mActionMode=null;
+                }
+            };
+
+
+            view.setOnClickListener(new View.OnClickListener(){
 
                 @Override
                 public void onClick(View v) {
@@ -71,17 +133,88 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder>{
                 @Override
                 public boolean onLongClick(View v) {
 
-                    position = getAdapterPosition();
-                    task_name = tasksList.get(position).get_taskname();
-                    AlertDialog dialog = AskOption();
-                    dialog.show();
+                    if (mActionMode != null) {
+                    return false;
+                    }
 
+                    mActionMode = activity.startActionMode(mActionModeCallback);
+                    v.setSelected(true);
                     return true;
                 }
             });
 
         }
 
+    }
+
+    private void initiatePopupWindow() {
+        try {
+            final MyDBHandler dbHandler = new MyDBHandler(activity);
+            final LayoutInflater inflater = (LayoutInflater) activity
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            popup_layout = inflater.inflate(R.layout.popup,
+                    (ViewGroup) activity.findViewById(R.id.popup_element));
+
+            final AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                    .setView(popup_layout)
+                    .setTitle("Enter Task")
+                    .setPositiveButton("Save", null)
+                    .setNeutralButton("Set Date", null)
+                    .create();
+
+            alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+                @Override
+                public void onShow(DialogInterface dialog) {
+
+                    userinput = (EditText) popup_layout.findViewById(R.id.userinput);
+                    date.s = tasksList.get(position).get_date();
+                    task_name = tasksList.get(position).get_taskname();
+                    userinput.setText(task_name);
+                    final int id=tasksList.get(position).get_id();
+
+                    Button save = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                    save.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+
+                            String input = userinput.getText().toString().trim();
+
+                            if (input != null && !input.isEmpty()) {
+
+                                Tasks task = new Tasks(input, date.s, tasksList.get(position).get_color(),
+                                        tasksList.get(position).get_notify());
+                                dbHandler.updateTask(task, task_name);
+                                tasksList.remove(position);
+                                tasksList.add(position, task);
+                                notifyDataSetChanged();
+                            }
+
+                            alertDialog.dismiss();
+                        }
+                    });
+
+                    Button date = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEUTRAL);
+                    date.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+
+                            DialogFragment newFragment = new MainActivity.DatePickerFragment();
+                            newFragment.show(fragmentActivity.getSupportFragmentManager(), "datePicker");
+                        }
+                    });
+                }
+            });
+
+            alertDialog.show();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

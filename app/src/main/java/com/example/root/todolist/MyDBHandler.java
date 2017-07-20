@@ -77,6 +77,14 @@ public class MyDBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
+    public void updateTask(Tasks task, String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String s= "UPDATE " + TABLE_TASKS + " SET " + COLUMN_TASKNAME + "= \"" +task.get_taskname()+ "\" ,"+COLUMN_DATE + "= \"" +
+                task.get_date()+ "\" WHERE " + COLUMN_TASKNAME+ "= \"" +name+ "\";";
+        db.execSQL(s);
+        db.close();
+    }
+
 
     // this is goint in record_TextView in the Main activity.
     public ArrayList<Tasks> databaseToString(){
