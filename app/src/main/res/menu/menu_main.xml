@@ -7,6 +7,14 @@
             android:orderInCategory="100" app:showAsAction="never" />
     -->
     <group android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/share"
+            android:orderInCategory="1"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/share_icon"
+            android:title="Share"/>
+
         <item
             android:id="@+id/create_backup"
             android:orderInCategory="1"

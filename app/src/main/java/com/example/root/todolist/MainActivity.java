@@ -214,19 +214,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    userinput = (EditText) layout.findViewById(R.id.userinput);
-                    String input = userinput.getText().toString().trim();
-
-                    if (input != null && !input.isEmpty()) {
-
-                        Tasks task = new Tasks(input, s, "low_priority", 1);
-                        dbHandler.addTask(task);
-                        taskList.add(task);
-                        mAdapter.notifyDataSetChanged();
-                    }
-
-                    s = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
-                    pw.dismiss();
+                    ...
                 }
             });
 
@@ -290,6 +278,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private String m_chosenDir = "";
+    private boolean m_newFolderEnabled = true;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -301,8 +291,28 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.create_backup:
 
-                dialog = Choose();
-                dialog.show();
+                /*dialog = Choose();
+                dialog.show();*/
+
+                // Create DirectoryChooserDialog and register a callback
+                DirectoryChooserDialog directoryChooserDialog =
+                        new DirectoryChooserDialog(MainActivity.this,
+                                new DirectoryChooserDialog.ChosenDirectoryListener()
+                                {
+                                    @Override
+                                    public void onChosenDir(String chosenDir)
+                                    {
+                                        m_chosenDir = chosenDir;
+                                        Toast.makeText( MainActivity.this, "Chosen directory: "+chosenDir, Toast.LENGTH_LONG).show();
+                                        StoreBackup(chosenDir);
+                                    }
+                                });
+                // Toggle new folder button enabling
+                directoryChooserDialog.setNewFolderEnabled(m_newFolderEnabled);
+                // Load directory chooser dialog for initial 'm_chosenDir' directory.
+                // The registered callback will be called upon final directory selection.
+                directoryChooserDialog.chooseDirectory(m_chosenDir);
+                m_newFolderEnabled = ! m_newFolderEnabled;
                 return true;
 
             case R.id.enable_notify:
@@ -317,6 +327,20 @@ public class MainActivity extends AppCompatActivity {
                 i = new Intent(this, UpdateNotification.class);
                 i.putExtra("val", 0);
                 startActivity(i);
+                return true;
+
+            case R.id.share:
+
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                ArrayList<Tasks> dbString = dbHandler.databaseToString();
+                String s="Tasks\t\t\t\t\t\tDeadline\n";
+                for (Tasks curr : dbString) {
+                    s+=curr.get_taskname()+"  "+curr.get_date()+"\n";
+                }
+                sendIntent.putExtra(Intent.EXTRA_TEXT, s);
+                sendIntent.setType("text/plain");
+                startActivity(Intent.createChooser(sendIntent, "Share TaskList via.."));
                 return true;
 
             default:
@@ -460,8 +484,8 @@ public class MainActivity extends AppCompatActivity {
 
         try {
 
-            File sdCard = Environment.getExternalStorageDirectory();
-            File dir = new File (sdCard.getAbsolutePath() + "/"+path);
+            //File sdCard = Environment.getExternalStorageDirectory();
+            File dir = new File (path);
             dir.mkdirs();
             File file = new File(dir, "backup.txt");
 
