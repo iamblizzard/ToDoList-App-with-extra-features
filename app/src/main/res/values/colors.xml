@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#4F95FF</color>
+    <color name="colorPrimaryDark">#4095FF</color>
     <color name="colorAccent">#FF4081</color>
     <color name="title">#000000</color>
     <color name="year"> #000000</color>
-    <color name="high_priority"> #F66E36 </color>
-    <color name="medium_priority"> #E7F50C </color>
-    <color name="low_priority"> #1EF50C </color>
+    <color name="high_priority">#bad31ffc</color>
+    <color name="medium_priority">#c7e7f50c</color>
+    <color name="low_priority">#b11ef50c</color>
     <color name="backup_window"> #B2E5FC </color>
 </resources>

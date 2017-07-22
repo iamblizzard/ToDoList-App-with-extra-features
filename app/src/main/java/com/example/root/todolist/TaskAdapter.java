@@ -1,33 +1,23 @@
 package com.example.root.todolist;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.view.ActionMode;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder>{
@@ -68,7 +58,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder>{
             date = (TextView) view.findViewById(R.id.date);
 
             view.setClickable(true);
-            view.setFocusableInTouchMode(true);
+            view.setFocusableInTouchMode(false);
 
             final android.view.ActionMode.Callback mActionModeCallback = new android.view.ActionMode.Callback() {
 
@@ -156,7 +146,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder>{
             popup_layout = inflater.inflate(R.layout.popup,
                     (ViewGroup) activity.findViewById(R.id.popup_element));
 
-            final AlertDialog alertDialog = new AlertDialog.Builder(activity)
+            final AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AlertDialogCustom))
                     .setView(popup_layout)
                     .setTitle("Edit Task")
                     .setPositiveButton("Save", null)
@@ -243,6 +233,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder>{
             default:
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.low_priority)); break;
         }
+
     }
 
     @Override
@@ -252,7 +243,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder>{
 
     private AlertDialog AskOption()
     {
-        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(context)
+        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom))
 
                 .setTitle("Delete")
                 .setMessage("Do you want to Delete Task\n" + Html.fromHtml("<b>"+String.valueOf(task_name)+"</b>"))
@@ -294,8 +285,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder>{
         final CharSequence[] items = { "Low Priority", "Medium Priority", "High Priority" };
         final String[] item = { "low_priority", "medium_priority", "high_priority" };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);//ERROR ShowDialog cannot be resolved to a type
-        builder.setTitle("Set your Priority");
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom));
+        builder.setTitle("Change your Priority");
         builder.setSingleChoiceItems(items, -1,
                 new DialogInterface.OnClickListener() {
 

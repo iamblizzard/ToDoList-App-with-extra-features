@@ -16,6 +16,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.ContextThemeWrapper;
 import android.view.ActionMode;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
             popup_layout = inflater.inflate(R.layout.popup,
                     (ViewGroup) findViewById(R.id.popup_element));
 
-            final AlertDialog alertDialog = new AlertDialog.Builder(this)
+            final AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom))
             .setView(popup_layout)
             .setTitle("Enter Task")
             .setPositiveButton("Save", null)
@@ -291,28 +292,9 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.create_backup:
 
-                /*dialog = Choose();
-                dialog.show();*/
+                dialog = Choose();
+                dialog.show();
 
-                // Create DirectoryChooserDialog and register a callback
-                DirectoryChooserDialog directoryChooserDialog =
-                        new DirectoryChooserDialog(MainActivity.this,
-                                new DirectoryChooserDialog.ChosenDirectoryListener()
-                                {
-                                    @Override
-                                    public void onChosenDir(String chosenDir)
-                                    {
-                                        m_chosenDir = chosenDir;
-                                        Toast.makeText( MainActivity.this, "Chosen directory: "+chosenDir, Toast.LENGTH_LONG).show();
-                                        StoreBackup(chosenDir);
-                                    }
-                                });
-                // Toggle new folder button enabling
-                directoryChooserDialog.setNewFolderEnabled(m_newFolderEnabled);
-                // Load directory chooser dialog for initial 'm_chosenDir' directory.
-                // The registered callback will be called upon final directory selection.
-                directoryChooserDialog.chooseDirectory(m_chosenDir);
-                m_newFolderEnabled = ! m_newFolderEnabled;
                 return true;
 
             case R.id.enable_notify:
@@ -350,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
 
     public AlertDialog Confirm()
     {
-        AlertDialog myConfirmDialogBox =new AlertDialog.Builder(this)
+        AlertDialog myConfirmDialogBox =new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom))
 
                 .setTitle("Delete All")
                 .setMessage("Do you want to Delete All Tasks")
@@ -384,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
 
     public AlertDialog Choose()
     {
-        AlertDialog myConfirmDialogBox =new AlertDialog.Builder(this)
+        AlertDialog myConfirmDialogBox =new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom))
 
                 .setTitle("Location")
                 .setMessage("Select your Preference")
@@ -393,13 +375,33 @@ public class MainActivity extends AppCompatActivity {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
 
-                        PopupWindow();
                         dialog.dismiss();
+                        // Create DirectoryChooserDialog and register a callback
+                        DirectoryChooserDialog directoryChooserDialog =
+                                new DirectoryChooserDialog(MainActivity.this,
+                                        new DirectoryChooserDialog.ChosenDirectoryListener()
+                                        {
+                                            @Override
+                                            public void onChosenDir(String chosenDir)
+                                            {
+                                                m_chosenDir = chosenDir;
+                                                Toast.makeText( MainActivity.this, "Chosen directory: "+chosenDir, Toast.LENGTH_SHORT).show();
+                                                SharedPreferences backupLocation = getSharedPreferences("backupLocation", Context.MODE_PRIVATE);
+                                                SharedPreferences.Editor editor = backupLocation.edit();
+                                                editor.putString("location", m_chosenDir).apply();
+                                                StoreBackup(m_chosenDir);
+                                            }
+                                        });
+                        // Toggle new folder button enabling
+                        directoryChooserDialog.setNewFolderEnabled(m_newFolderEnabled);
+                        // Load directory chooser dialog for initial 'm_chosenDir' directory.
+                        // The registered callback will be called upon final directory selection.
+                        directoryChooserDialog.chooseDirectory(m_chosenDir);
+                        //m_newFolderEnabled = ! m_newFolderEnabled;
+
                     }
 
                 })
-
-
 
                 .setNegativeButton("Use Default", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -420,64 +422,6 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .create();
         return myConfirmDialogBox;
-    }
-
-    public void PopupWindow(){
-
-        try {
-            final LayoutInflater inflater = (LayoutInflater) MainActivity.this
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            final View layout = inflater.inflate(R.layout.popup_backup,
-                    (ViewGroup) findViewById(R.id.popup_backup));
-
-            pw = new PopupWindow(layout, RelativeLayout.LayoutParams.MATCH_PARENT, 200, true);
-            pw.showAtLocation(this.findViewById(android.R.id.content), Gravity.CENTER, 0, 0);
-
-            final EditText location = (EditText) layout.findViewById(R.id.backup_text);
-            final SharedPreferences backupLocation = getSharedPreferences("backupLocation", Context.MODE_PRIVATE);
-
-            String name = backupLocation.getString("location", "");
-            if(name != "") {
-                location.setText(name);
-            }
-
-            Button backup_btn = (Button) layout.findViewById(R.id.backup_btn);
-            backup_btn.setOnClickListener(new Button.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-
-                    SharedPreferences.Editor editor = backupLocation.edit();
-                    String s = location.getText().toString();
-
-                    if(s != "") {
-
-                        editor.putString("location", s).apply();
-                        pw.dismiss();
-
-                        StoreBackup(s);
-                    }
-                    else{
-
-                        Toast.makeText(getApplication(), "Enter Something", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-            Button cancel_btn = (Button) layout.findViewById(R.id.cancel_backup);
-            cancel_btn.setOnClickListener(new Button.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-
-                    pw.dismiss();
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void StoreBackup(String path) {

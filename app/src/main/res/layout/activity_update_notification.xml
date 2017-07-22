@@ -14,14 +14,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:choiceMode="multipleChoice"
-        android:id="@+id/NotofyListView"></ListView>
+        android:id="@+id/NotofyListView" />
 
     <Button
         android:id="@+id/save_notify"
-        android:text="Save"
+        android:text="S a v e"
         android:layout_alignBottom="@+id/NotofyListView"
         android:layout_centerHorizontal="true"
         android:layout_width="100dp"
-        android:layout_height="50dp"/>
+        android:layout_height="40dp"
+        android:background="@drawable/button_shape"
+        android:shadowColor="#A8A8A8" />
 
 </RelativeLayout>
